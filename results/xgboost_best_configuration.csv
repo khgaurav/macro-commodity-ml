@@ -1,0 +1,2 @@
+max_depth,min_child_weight,learning_rate,n_estimators,subsample,colsample_bytree,gamma,reg_alpha,reg_lambda,Selected_Feature_Set,Selected_Feature_Count
+4,5,0.01,200,0.7,0.5,0.0,0.1,0.5,Top 10 Features,10
