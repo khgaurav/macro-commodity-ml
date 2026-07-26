@@ -177,7 +177,25 @@ Run the notebook cells in order to load the processed data, create chronological
 
 ### Run the XGBoost model
 
-Instructions and the final model filename will be added when the XGBoost implementation is complete.
+```bash
+python xgboost_gold_prediction.py
+```
+
+This loads the processed data, creates the same chronological splits, trains a
+baseline XGBoost model and a hyperparameter-tuned model (selected by a
+randomized search scored with time-series cross-validation on the combined
+training and validation data, then refit on that data before testing),
+evaluates them against a zero-return baseline on the test period, and generates
+visualizations. It saves the following to the `results/` folder:
+
+```text
+results/xgboost_metrics.csv
+results/xgboost_predictions.csv
+results/xgboost_tuning_results.csv
+```
+
+XGBoost is a tree-based model and is scale-invariant, so the features and target
+are used on their natural scale without the standardization step used for the LSTM.
 
 ## Modeling Approach
 
