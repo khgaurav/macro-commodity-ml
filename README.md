@@ -6,6 +6,7 @@ This project investigates whether historical commodity, financial-market, and ma
 
 The dataset was created by combining daily market data from Yahoo Finance with macroeconomic data from the Federal Reserve Economic Data (FRED) database. After preprocessing and feature engineering, the project compares machine learning models that approach the problem in different ways:
 
+- **Lasso**, a linear baseline whose L1 penalty performs feature selection
 - **XGBoost**, which learns nonlinear relationships from engineered features
 - **Long Short-Term Memory (LSTM)**, which learns temporal patterns from sequences of historical observations
 
@@ -88,20 +89,27 @@ The preprocessing pipeline creates features including:
 ```text
 macro-commodity-ml/
 ├── notebooks/
-│   └── lstm_gold_prediction.ipynb
+│   ├── lasso_gold_prediction.ipynb
+│   ├── lstm_gold_prediction.ipynb
+│   ├── xgboost_gold_prediction.ipynb
+│   ├── compare_gold_models.ipynb
+│   └── classification_metrics_gold_models.ipynb
 ├── scripts/
 │   ├── create_dataset.py
-│   └── process_dataset.py
+│   ├── process_dataset.py
+│   ├── feature_ablation_test.py
+│   └── xgboost_gold_prediction.py
 ├── data/
 │   ├── daily_commodity_market_data.csv
 │   └── daily_commodity_market_data_cleaned.csv
 ├── results/
+│   └── (metrics, predictions, tuning-results, and feature-importance CSVs for every model)
 ├── docs/
+│   ├── Iteration #02 _ Team Topic.pdf
+│   └── Iteration_4_Report.pdf
 ├── README.md
 └── requirements.txt
 ```
-
-Additional model files, reports, figures, and saved results may be added as the project is completed.
 
 ## Installation
 
@@ -170,6 +178,22 @@ This performs data cleaning and feature engineering and saves:
 data/daily_commodity_market_data_cleaned.csv
 ```
 
+### Run the Lasso model
+
+Open:
+
+```text
+notebooks/lasso_gold_prediction.ipynb
+```
+
+Run the notebook cells in order to load the processed data, create chronological splits, scale the features, fit a baseline Lasso model, tune its regularization strength (alpha), and evaluate it on the test set. It saves the following to the `results/` folder:
+
+```text
+results/lasso_metrics.csv
+results/lasso_predictions.csv
+results/lasso_feature_importance.csv
+```
+
 ### Run the LSTM model
 
 Open:
@@ -218,6 +242,10 @@ The data is split chronologically rather than randomly because this is a time-se
 
 Predictor and target scalers are fitted using only the training data. The fitted scalers are then applied to the validation and test sets to prevent data leakage.
 
+### Lasso
+
+Lasso uses the engineered features directly (after scaling) and relies on its L1 penalty to shrink less useful predictors' coefficients to exactly zero, acting as a built-in feature-selection step.
+
 ### LSTM
 
 The LSTM model receives sequences of historical feature vectors and predicts the next-day gold log return. Its main hyperparameters include:
@@ -240,14 +268,19 @@ Classification metrics such as precision, recall, F1-score, ROC-AUC, and confusi
 
 ## Results
 
-Final results will be added after both models have been trained and evaluated on the same unseen test period.
+All models are evaluated on the same held-out test period (753 trading days, July 11, 2023 – July 13, 2026):
 
 | Model | MAE | MSE | RMSE | R² | Directional Accuracy |
 |---|---:|---:|---:|---:|---:|
-| Baseline prediction | TBD | TBD | TBD | TBD | TBD |
-| Baseline LSTM | TBD | TBD | TBD | TBD | TBD |
-| Tuned LSTM | TBD | TBD | TBD | TBD | TBD |
-| XGBoost | TBD | TBD | TBD | TBD | TBD |
+| Zero-Return Baseline | 0.009195 | 0.000175 | 0.013236 | -0.005592 | — |
+| Baseline Lasso | 0.009173 | 0.000174 | 0.013195 | 0.000677 | 51.66% |
+| Tuned Lasso | 0.009163 | 0.000174 | 0.013197 | 0.000323 | 53.25% |
+| Baseline LSTM | 0.009158 | 0.000174 | 0.013195 | 0.000614 | 55.78% |
+| Tuned LSTM | 0.009123 | 0.000174 | 0.013183 | 0.002461 | 56.44% |
+| Baseline XGBoost | 0.009201 | 0.000174 | 0.013206 | -0.000923 | 54.18% |
+| Tuned XGBoost | 0.009191 | 0.000175 | 0.013233 | -0.005104 | 52.72% |
+
+Tuned LSTM is the best-performing model on every metric, though the margin over the Zero-Return Baseline is small across all three model families — see `docs/Iteration_4_Report.pdf` for full discussion and interpretation.
 
 ## Visualizations
 
@@ -263,6 +296,8 @@ The final project will include visualizations such as:
 Generated figures and their repository locations will be documented here when available.
 
 ## Feature Importance and Interpretation
+
+Lasso's coefficients are a direct measure of feature importance: the L1 penalty shrinks less-informative features' coefficients to exactly zero, so the non-zero coefficients that remain are the model's selected features.
 
 XGBoost feature importance can be obtained directly from the trained tree model.
 
