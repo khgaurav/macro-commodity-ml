@@ -19,8 +19,8 @@ from sklearn.model_selection import TimeSeriesSplit
 # ---------------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_PATH = BASE_DIR / "daily_commodity_market_data_cleaned.csv"
-RESULTS_DIR = BASE_DIR / "results"
+DATA_PATH = BASE_DIR.parent / "data" / "daily_commodity_market_data_cleaned.csv"
+RESULTS_DIR = BASE_DIR.parent / "results"
 
 TARGET_COLUMN = "tomorrow_gold_log_return"
 SEED = 42
@@ -61,7 +61,8 @@ def load_data():
     if not DATA_PATH.exists():
         raise FileNotFoundError(
             f"Dataset not found: {DATA_PATH}\n"
-            "Place daily_commodity_market_data_cleaned.csv beside this script."
+            "Place daily_commodity_market_data_cleaned.csv in the ../data/ folder "
+            "relative to this script."
         )
 
     df = pd.read_csv(

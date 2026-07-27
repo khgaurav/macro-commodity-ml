@@ -7,8 +7,8 @@ def log_ret(s, n=1):
     return np.log(r.mask(r <= 0))
 
 def main():
-    input_path = os.path.join(os.path.dirname(__file__), "daily_commodity_market_data.csv")
-    output_path = os.path.join(os.path.dirname(__file__), "daily_commodity_market_data_cleaned.csv")
+    input_path = os.path.join(os.path.dirname(__file__), "..", "data", "daily_commodity_market_data.csv")
+    output_path = os.path.join(os.path.dirname(__file__), "..", "data", "daily_commodity_market_data_cleaned.csv")
     
     if not os.path.exists(input_path):
         return

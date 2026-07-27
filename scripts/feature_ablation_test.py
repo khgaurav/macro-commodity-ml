@@ -11,8 +11,9 @@ SEED = 42
 TARGET = "tomorrow_gold_log_return"
 ALPHA = 0.000215  # same tuned alpha selected in lasso_gold_prediction.ipynb
  
-DATA_PATH = "daily_commodity_market_data_cleaned.csv"
-RESULTS_DIR = Path("results")
+BASE_DIR = Path(__file__).resolve().parent
+DATA_PATH = BASE_DIR.parent / "data" / "daily_commodity_market_data_cleaned.csv"
+RESULTS_DIR = BASE_DIR.parent / "results"
  
 np.random.seed(SEED)
  
