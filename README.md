@@ -87,11 +87,16 @@ The preprocessing pipeline creates features including:
 
 ```text
 macro-commodity-ml/
-├── create_dataset.py
-├── process_dataset.py
-├── daily_commodity_market_data.csv
-├── daily_commodity_market_data_cleaned.csv
-├── lstm_gold_prediction.ipynb
+├── notebooks/
+│   └── lstm_gold_prediction.ipynb
+├── scripts/
+│   ├── create_dataset.py
+│   └── process_dataset.py
+├── data/
+│   ├── daily_commodity_market_data.csv
+│   └── daily_commodity_market_data_cleaned.csv
+├── results/
+├── docs/
 ├── README.md
 └── requirements.txt
 ```
@@ -142,13 +147,13 @@ pip install pandas numpy matplotlib scikit-learn tensorflow jupyter yfinance
 ### Generate the raw dataset
 
 ```bash
-python create_dataset.py
+python scripts/create_dataset.py
 ```
 
 This downloads the required Yahoo Finance and FRED data and saves:
 
 ```text
-daily_commodity_market_data.csv
+data/daily_commodity_market_data.csv
 ```
 
 Because the data sources update over time, rerunning this script may produce a dataset with a later end date than the version used in the submitted experiments.
@@ -156,13 +161,13 @@ Because the data sources update over time, rerunning this script may produce a d
 ### Preprocess the dataset
 
 ```bash
-python process_dataset.py
+python scripts/process_dataset.py
 ```
 
 This performs data cleaning and feature engineering and saves:
 
 ```text
-daily_commodity_market_data_cleaned.csv
+data/daily_commodity_market_data_cleaned.csv
 ```
 
 ### Run the LSTM model
@@ -170,7 +175,7 @@ daily_commodity_market_data_cleaned.csv
 Open:
 
 ```text
-lstm_gold_prediction.ipynb
+notebooks/lstm_gold_prediction.ipynb
 ```
 
 Run the notebook cells in order to load the processed data, create chronological splits, scale the variables, build historical sequences, train the LSTM, tune its hyperparameters, evaluate it on unseen data, and generate visualizations.
@@ -178,7 +183,7 @@ Run the notebook cells in order to load the processed data, create chronological
 ### Run the XGBoost model
 
 ```bash
-python xgboost_gold_prediction.py
+python scripts/xgboost_gold_prediction.py
 ```
 
 This loads the processed data, creates the same chronological splits, trains a
