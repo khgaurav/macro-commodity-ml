@@ -334,17 +334,12 @@ Potential limitations include:
 
 ## Future Improvements
 
-Possible extensions include:
+The project's most significant remaining gaps:
 
-<!-- - Additional economic indicators
-- Alternative sequence lengths
-- Walk-forward validation
-- Attention-based neural networks
-- Transformer time-series models
-- More extensive hyperparameter optimization
-- Regime-specific models
-- Prediction intervals and uncertainty estimates
-- Trading simulations that include transaction costs -->
+- **Model ensembling**: combine the Lasso, XGBoost, and LSTM predictions (e.g., simple averaging or stacking) to test whether blending the three approaches pushes directional accuracy meaningfully above any single model's ~56%.
+- **Better-suited approaches for predicting gold specifically**: none of the three models found strong signal in daily OHLC and macro data alone, so attention-based or transformer time-series architectures, or fundamentally different data (options-implied volatility, futures positioning, sentiment), may be necessary to meaningfully improve on the current results.
+- **Walk-forward retraining**: every model uses a single static 70/15/15 split; rolling or expanding-window retraining would better reflect real-world use and test robustness to regime changes over the dataset's 22-year span.
+- **Prediction intervals**: models currently output a single point estimate with no confidence measure, which is misleading given how weak and noisy the underlying signal is.
 
 ## Data Sources
 
