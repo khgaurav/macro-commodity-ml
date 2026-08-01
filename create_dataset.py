@@ -17,7 +17,10 @@ YAHOO_TICKERS = {
     "US Dollar Index": "DX-Y.NYB",
     "S&P 500": "^GSPC",
     "EUR/USD": "EURUSD=X",
-    "VIX Index": "^VIX"
+    "VIX Index": "^VIX",
+    # Implied volatility indices (gold and crude oil), both start mid-2008
+    "GVZ Index": "^GVZ",
+    "OVX Index": "^OVX"
 }
 
 FRED_TICKERS = {
@@ -36,9 +39,10 @@ def download_yahoo_data(tickers, start_date, end_date):
                 print(f"Dataset name: {name}")
                 print("Dataset source: Yahoo Finance")
                 data[name] = df['Close']
-                # Special extraction for Gold Volume, High, and Low
+                # Special extraction for Gold Volume and full OHLC.
                 if name == "Gold":
                     data["Gold Volume"] = df['Volume']
+                    data["Gold Open"] = df['Open']
                     data["Gold High"] = df['High']
                     data["Gold Low"] = df['Low']
         except Exception as e:
@@ -96,7 +100,7 @@ def merge_and_clean_data(yahoo_data, fred_data, start_date, end_date):
     return merged_df
 
 def main():
-    end_date = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+    end_date = datetime.date.today().strftime("%Y-%m-%d")
     
     # Fetch Data
     yahoo_data = download_yahoo_data(YAHOO_TICKERS, START_DATE, end_date)
