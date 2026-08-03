@@ -1,0 +1,7 @@
+Horizon,Comparison,DM_statistic,p_value,Significant_5pct
+5,XGBoost (tuned) vs Persistence,-3.8428795763578565,0.00012159914218567991,True
+5,XGBoost (tuned) vs HAR (linear),-3.3087730319222635,0.00093705767981489,True
+5,XGBoost (tuned) vs XGBoost (default),-6.392152222801916,1.6356693777197506e-10,True
+22,XGBoost (tuned) vs Persistence,-3.265574921262656,0.0010924210238503207,True
+22,XGBoost (tuned) vs HAR (linear),-2.2589221775428787,0.02388822618979569,True
+22,XGBoost (tuned) vs XGBoost (default),-3.6547639333902873,0.0002574187260722116,True
