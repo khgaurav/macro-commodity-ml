@@ -4,12 +4,15 @@
 
 This project investigates whether historical commodity, financial-market, and macroeconomic data can be used to forecast the gold market.
 
-The dataset was built by combining daily market data from Yahoo Finance with macroeconomic data from the Federal Reserve Economic Data (FRED) database. Two models forecast **gold's near-term realized volatility** (`vol_target_5d`, `vol_target_22d`) from the same features, the same sample, and the same splits:
+The dataset was built by combining daily market data from Yahoo Finance with macroeconomic data from the Federal Reserve Economic Data (FRED) database. Three models forecast **gold's near-term realized volatility** (`vol_target_5d`, `vol_target_22d`) from the same features, the same sample, and the same splits:
 
+- **Lasso** — a linear model with L1 regularization, which also selects features by shrinking coefficients to zero
 - **XGBoost** — learns nonlinear relationships from engineered tabular features
 - **LSTM** — learns from 30-day sequences of those same features
 
-**Why volatility rather than price.** The project began by predicting the next day's gold *return*. That target proved effectively unpredictable from this data: both models reached R² ≈ 0, and a direction classifier scored ROC-AUC ≈ 0.51 against a 0.50 no-skill line. That is a genuine finding about market efficiency rather than a modelling failure, and it is documented as such. Volatility, by contrast, clusters — calm follows calm, turbulence follows turbulence — and is therefore forecastable, so both models were pivoted to it.
+Each is measured against the same two references: a persistence baseline, and **HAR**, the standard linear benchmark for realized-volatility forecasting.
+
+**Why volatility rather than price.** The project began by predicting the next day's gold *return*. That target proved effectively unpredictable from this data: the models reached R² ≈ 0, and a direction classifier scored ROC-AUC ≈ 0.51 against a 0.50 no-skill line. That is a genuine finding about market efficiency rather than a modelling failure, and it is documented as such. Volatility, by contrast, clusters — calm follows calm, turbulence follows turbulence — and is therefore forecastable, so the models were pivoted to it.
 
 Methodology, results, significance testing, ablations, and interpretation are in **[REPORT.md](REPORT.md)**.
 
@@ -84,14 +87,17 @@ macro-commodity-ml/
 ├── create_dataset.py                  # downloads raw data (Yahoo Finance + FRED)
 ├── process_dataset.py                 # cleaning + feature engineering
 │
-├── xgboost_gold_prediction.ipynb      # XGBoost volatility model — full analysis
-├── lstm_gold_prediction.ipynb         # LSTM volatility model — same structure
-├── model_comparison.ipynb             # stub, superseded by the two notebooks above
+├── lasso_gold_prediction.ipynb        # Lasso volatility model
+├── xgboost_gold_prediction.ipynb      # XGBoost volatility model
+├── lstm_gold_prediction.ipynb         # LSTM volatility model
+├── model_comparison.ipynb             # stub, superseded by the three notebooks above
 │
 ├── daily_commodity_market_data.csv         # raw download
 ├── daily_commodity_market_data_cleaned.csv # cleaned + engineered, model input
 │
-├── results/                           # exported metrics and predictions
+├── results/                           # exported metrics and predictions,
+│                                      # one lasso_vol_* / xgboost_vol_* /
+│                                      # lstm_vol_* set per model
 │
 ├── report_figures/                    # every figure, written by the notebooks
 │
@@ -100,7 +106,7 @@ macro-commodity-ml/
 ├── requirements.txt
 ```
 
-Both notebooks are self-contained and share no imported module, so each runs top to bottom on its own. They use identical feature lists, sample filters, splits, benchmarks, and metric definitions, which is what makes the two models directly comparable.
+The three model notebooks are self-contained and share no imported module, so each runs top to bottom on its own. Each follows the same twelve-section structure — benchmarks, tuning, Diebold-Mariano significance tests, feature importance, both ablations, a volatility-direction classifier, and a one-year walk-forward backtest — and uses identical feature lists, sample filters, splits, and metric definitions. That is what makes the three models directly comparable.
 
 ## Data Sources
 
