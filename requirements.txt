@@ -9,3 +9,4 @@ matplotlib==3.9.2
 jupyterlab==4.4.3
 ipykernel==6.29.5
 streamlit==1.60.0
+altair==6.2.2
