@@ -80,7 +80,7 @@ def main():
 
     features = pd.DataFrame(index=df.index)
 
-    # --- Return-prediction target and 21 features (used by the LSTM model) ---
+    # --- Return-prediction target and the 21 macro / cross-asset features ---
     features["tomorrow_gold_log_return"] = log_ret(df["Gold"]).shift(-1)
 
     features["gold_return_1d"] = log_ret(df["Gold"])
@@ -113,7 +113,7 @@ def main():
     features["two_ten_slope"] = two_ten_slope
     features["two_ten_slope_change_bps"] = two_ten_slope.diff() * 100
 
-    # --- Volatility targets and HAR features (for the XGBoost model) ---
+    # --- Volatility targets and HAR features ---
     valid = (df["Gold High"] > df["Gold Low"]) & (df["Gold Open"] > 0) & (df["Gold"] > 0)
 
     yz = yang_zhang_vol(df["Gold Open"], df["Gold High"], df["Gold Low"], df["Gold"]).where(valid)
@@ -139,10 +139,11 @@ def main():
 
     features = features.replace([np.inf, -np.inf], np.nan)
 
-    # Only the LSTM's columns gate which rows survive; XGBoost drops its own NaN rows
+    # Forward-looking targets are excluded from the gate so the newest day survives
     vol_prefixes = ("har_", "park_", "vol_", "gvz_", "ovx_", "vrp")
     lstm_columns = [c for c in features.columns
-                    if not c.startswith(vol_prefixes)]
+                    if not c.startswith(vol_prefixes)
+                    and c != "tomorrow_gold_log_return"]
     df_clean = features.dropna(subset=lstm_columns).copy()
     df_clean.to_csv(output_path, index=True)
 

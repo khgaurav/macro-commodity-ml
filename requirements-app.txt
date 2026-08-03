@@ -1,0 +1,6 @@
+streamlit==1.60.0
+altair==6.2.2
+pandas==2.2.3
+numpy==2.2.6
+xgboost==3.3.0
+yfinance==1.5.1

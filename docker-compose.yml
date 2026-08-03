@@ -1,0 +1,14 @@
+services:
+  gold-sizer:
+    build: .
+    image: gold-sizer:latest
+    container_name: gold-sizer
+    restart: unless-stopped
+    expose:
+      - "8501"
+    networks:
+      - tunnel
+
+networks:
+  tunnel:
+    external: true
