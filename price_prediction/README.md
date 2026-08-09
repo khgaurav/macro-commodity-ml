@@ -87,7 +87,7 @@ The preprocessing pipeline creates features including:
 ## Repository Structure
 
 ```text
-price_prediction/
+macro-commodity-ml/
 ├── notebooks/
 │   ├── lasso_gold_prediction.ipynb
 │   ├── lstm_gold_prediction.ipynb
@@ -117,11 +117,8 @@ price_prediction/
 
 ```bash
 git clone https://github.com/khgaurav/macro-commodity-ml.git
-cd macro-commodity-ml/price_prediction
+cd macro-commodity-ml
 ```
-
-All paths below are relative to this folder. The companion volatility project
-lives in `../volatility_prediction/` and has its own dependency set.
 
 ### 2. Create a virtual environment
 
