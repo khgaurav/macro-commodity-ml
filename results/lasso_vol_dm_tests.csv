@@ -1,7 +1,0 @@
-Horizon,Comparison,DM_statistic,p_value,Significant_5pct
-5,Lasso (tuned) vs Persistence,-3.897895154975508,9.703240724578954e-05,True
-5,Lasso (tuned) vs HAR (linear),-3.189666359946727,0.001424371314763917,True
-5,Lasso (tuned) vs Lasso (default),1.130873308114488,0.2581084192349028,False
-22,Lasso (tuned) vs Persistence,-4.378324131146178,1.1959539283346032e-05,True
-22,Lasso (tuned) vs HAR (linear),-3.2954583226741163,0.0009826127757004421,True
-22,Lasso (tuned) vs Lasso (default),-1.4549809709368395,0.14567452963880623,False

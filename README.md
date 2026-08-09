@@ -1,13 +1,13 @@
 # Gold Volatility Prediction Using Commodity and Macroeconomic Indicators
 
 Forecasting gold's realized volatility 5 and 22 trading days ahead from daily
-commodity, financial-market, and macroeconomic data. Three models — **Lasso**,
-**XGBoost**, and an **LSTM** — share one feature set, one sample, one split, and
-one evaluation, and are measured against two benchmarks: a persistence forecast
-and **HAR**, the standard linear benchmark for realized volatility.
+commodity, financial-market, and macroeconomic data. Two models — **XGBoost** and
+an **LSTM** — share one feature set, one sample, one split, and one evaluation,
+and are measured against two benchmarks: a persistence forecast and **HAR**, the
+standard linear benchmark for realized volatility.
 
 **Why volatility and not price.** The project began by predicting the next day's
-gold *return*. All three models landed at R² ≈ 0 with a direction classifier at
+gold *return*. Every model landed at R² ≈ 0 with a direction classifier at
 ROC-AUC ≈ 0.51, below a majority-class baseline. That is a result about market
 efficiency, not a modelling failure, and it is reported as one in
 `price_prediction/` on the `main` branch. Volatility clusters — calm
@@ -26,14 +26,16 @@ over-forecasting calm, which is what a risk application needs.
 |---|---|---|---|---|---|
 | 5 | Persistence | 0.00531 | 0.207 | 0.515 | 50.3% |
 | 5 | HAR | 0.00463 | 0.355 | 0.393 | 64.6% |
-| 5 | Lasso (tuned) | 0.00420 | 0.473 | 0.309 | 70.0% |
+| 5 | XGBoost (default) | 0.00449 | 0.356 | 0.414 | 67.5% |
 | 5 | **XGBoost (tuned)** | **0.00420** | **0.485** | **0.305** | 70.0% |
+| 5 | LSTM (default) | 0.00433 | 0.474 | 0.313 | **71.3%** |
 | 5 | LSTM (tuned) | 0.00445 | 0.464 | 0.347 | 69.5% |
 | 22 | Persistence | 0.00403 | 0.152 | 0.370 | 54.2% |
 | 22 | HAR | 0.00348 | 0.341 | 0.285 | 64.7% |
-| 22 | **Lasso (tuned)** | **0.00307** | **0.521** | **0.216** | **77.5%** |
-| 22 | XGBoost (tuned) | 0.00320 | 0.489 | 0.235 | 72.5% |
-| 22 | LSTM (tuned) | 0.00326 | 0.471 | 0.252 | 72.5% |
+| 22 | XGBoost (default) | 0.00358 | 0.260 | 0.371 | 68.3% |
+| 22 | **XGBoost (tuned)** | **0.00320** | **0.489** | **0.235** | **72.5%** |
+| 22 | LSTM (default) | 0.00324 | 0.484 | 0.237 | 70.9% |
+| 22 | LSTM (tuned) | 0.00326 | 0.471 | 0.252 | **72.5%** |
 
 Directional accuracy is the share of days the model correctly calls volatility
 rising or falling against the trailing estimate.
@@ -45,47 +47,57 @@ consecutive forecast windows overlap. Negative favours the model.
 
 | h | Model vs HAR | DM | p | Sig. |
 |---|---|---|---|---|
-| 5 | Lasso | −3.19 | 0.0014 | yes |
 | 5 | XGBoost | −3.31 | 0.0009 | yes |
 | 5 | LSTM | −2.18 | 0.0296 | yes |
-| 22 | Lasso | −3.30 | 0.0010 | yes |
 | 22 | XGBoost | −2.26 | 0.0239 | yes |
 | 22 | LSTM | −1.59 | 0.1125 | **no** |
 
-All three beat persistence at the 1% level at both horizons.
+Both beat persistence at the 1% level at both horizons. XGBoost is the better
+model — ahead at both horizons on every metric, and the only one that clears HAR
+significantly at h=22 — though its margin over the LSTM is small, 0.008 of QLIKE
+at h=5 and 0.002 at h=22. The LSTM's untuned baseline beats its own tuned version
+at both horizons, a difference the DM tests find insignificant either way
+(p=0.070 and p=0.338).
 
 ### What actually mattered
 
 **The volatility estimator, not the model.** Re-running everything on a Parkinson
-target instead of Yang-Zhang removes the significant edge over HAR for every
-model — p rises to 0.087 (XGBoost), 0.090 (Lasso), 0.211 (LSTM). Accounting for
-the overnight gap is the single highest-impact decision here, and it is a
-measurement choice made before any model sees the data.
+target instead of Yang-Zhang removes the significant edge over HAR for both
+models — p rises to 0.087 for XGBoost and 0.211 for the LSTM. Accounting for the
+overnight gap is the single highest-impact decision here, and it is a measurement
+choice made before any model sees the data. That it moves a tree ensemble and a
+recurrent network by comparable amounts says the effect belongs to the target.
 
 **Implied volatility, not realized history.** QLIKE at h=5, every row retuned
 from scratch:
 
-| Feature set | # | Lasso | XGBoost |
+| Feature set | # | XGBoost | LSTM |
 |---|---|---|---|
-| HAR only | 3 | 0.393 | 0.393 |
-| Macro / cross-asset only | 21 | 0.496 | 0.361 |
-| HAR + macro | 24 | 0.398 | 0.343 |
-| HAR + implied vol | 8 | **0.303** | 0.313 |
-| Full | 29 | 0.309 | **0.305** |
+| HAR only | 3 | 0.393 | 0.401 |
+| Macro / cross-asset only | 21 | 0.361 | 0.413 |
+| HAR + macro | 24 | 0.343 | 0.416 |
+| HAR + implied vol | 8 | 0.313 | 0.425 |
+| Full | 29 | **0.305** | **0.347** |
 
-Eight features including GVZ beat twenty-four without it. Importance measures
-agree: XGBoost's two GVZ features carry 0.366 of total gain against 0.237 for all
-three HAR components, and `gvz_log` is Lasso's largest coefficient by a factor of
-five. This overturns the previous iteration's conclusion that volatility's own
-recent history was the strongest predictor — that was true of the feature set
-available at the time.
+For XGBoost, eight features including GVZ beat twenty-four without it. Adding the
+21 macro features on top buys only 0.008 more QLIKE, so that block is a minor
+complement rather than a driver. The LSTM needs the full 29 before implied
+volatility helps at all — either eight channels give the recurrent layer too
+little to condition on, or its five-point search covers far less ground than
+XGBoost's 40, and the evidence does not separate the two.
+
+Importance measures agree: XGBoost's two GVZ features carry 0.366 of total gain
+against 0.237 for all three HAR components, and the LSTM's permutation importance
+ranks them second and fourth. This overturns the previous iteration's conclusion
+that volatility's own recent history was the strongest predictor — that was true
+of the feature set available at the time.
 
 ### Walk-forward and position sizing
 
 One fixed split is not enough, so a walk-forward retrained on all resolved labels
 and stepped through 237 trading days, 31 July 2025 – 29 July 2026. Level-scale
-RMSE: Lasso 0.00822, XGBoost 0.00840, LSTM 0.00946, against 0.01127 for a 20-day
-trailing average.
+RMSE: XGBoost 0.00840, LSTM 0.00946, against 0.01127 for a 20-day trailing
+average. Both keep positive log-scale R² over that window, +0.172 and +0.130.
 
 The forecast cannot pick direction, but it can size a position — position = risk
 target ÷ forecast volatility. Targeting 10% annualized risk on a $1,000 stake,
@@ -96,7 +108,6 @@ leverage capped at 3×, 2bp on turnover:
 | Gold buy & hold | $1,097 | +9.7% | 0.43 | −27.5% |
 | Vol-target (naive 20d) | $1,091 | +9.1% | 0.70 | −14.9% |
 | Vol-target (XGBoost) | **$1,186** | **+18.6%** | **1.26** | −16.2% |
-| Vol-target (Lasso) | $1,164 | +16.4% | 1.14 | −16.1% |
 | Vol-target (LSTM) | $1,155 | +15.5% | 0.90 | −18.2% |
 
 The gain comes from holding less through the March 2026 drawdown, not from
@@ -175,7 +186,6 @@ early-stopping slice from the rows still being fitted.
 ```text
 .
 ├── notebooks/
-│   ├── lasso_gold_prediction.ipynb     # Lasso volatility model
 │   ├── xgboost_gold_prediction.ipynb   # XGBoost volatility model
 │   └── lstm_gold_prediction.ipynb      # LSTM volatility model
 ├── scripts/
@@ -189,8 +199,8 @@ early-stopping slice from the rows still being fitted.
 └── requirements.txt
 ```
 
-Each notebook is self-contained and imports nothing from the others. All three
-follow the same twelve-section structure — benchmarks, tuning, DM tests, feature
+Each notebook is self-contained and imports nothing from the other. Both follow
+the same twelve-section structure — benchmarks, tuning, DM tests, feature
 importance, both ablations, a direction classifier, and the walk-forward backtest
 — on identical feature lists, filters, splits, and metric definitions. That is
 what makes them comparable.
@@ -230,7 +240,7 @@ the largest spikes — the early-2026 excursion above 6% daily volatility is met
 with a forecast near 2%. This is not a tail-risk model; any limit derived from it
 needs an explicit buffer.
 
-The LSTM's failure to beat the simpler models looks like a data property rather
+The LSTM's failure to beat XGBoost looks like a data property rather
 than an architecture one: a 22-day moving average of log volatility autocorrelates
 at 0.994, so the multi-scale dependence a recurrent layer would have to discover
 is already pre-computed and handed to every model in three columns. The
