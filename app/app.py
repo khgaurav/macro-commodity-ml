@@ -8,7 +8,8 @@ import pandas as pd
 import streamlit as st
 import xgboost as xgb
 
-CSV = "daily_commodity_market_data_cleaned.csv"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CSV = os.path.join(ROOT, "data", "daily_commodity_market_data_cleaned.csv")
 
 FEATURES = [
     "har_daily", "har_weekly", "har_monthly",
@@ -34,8 +35,8 @@ RISK = {"Careful": 0.05, "Normal": 0.10, "Aggressive": 0.15}
 def refresh():
     try:
         for script in ("create_dataset.py", "process_dataset.py"):
-            subprocess.run([sys.executable, script], check=True,
-                           capture_output=True, timeout=900)
+            subprocess.run([sys.executable, os.path.join(ROOT, "scripts", script)],
+                           check=True, capture_output=True, timeout=900)
         return True
     except Exception:
         return False

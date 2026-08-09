@@ -45,7 +45,7 @@ def har_block(vol, prefix, horizons):
 
 
 def main():
-    base = os.path.dirname(__file__)
+    base = os.path.join(os.path.dirname(__file__), "..", "data")
     input_path = os.path.join(base, "daily_commodity_market_data.csv")
     output_path = os.path.join(base, "daily_commodity_market_data_cleaned.csv")
 

@@ -1,0 +1,12 @@
+.git/
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# The app only needs app/, scripts/, and data/ — leave the research output out
+# of the image so it stays small.
+notebooks/
+report_figures/
+results/
+*.pptx

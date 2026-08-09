@@ -5,7 +5,7 @@ import yfinance as yf
 
 # Configuration
 START_DATE = "2003-12-01"
-OUTPUT_FILE = "daily_commodity_market_data.csv"
+OUTPUT_FILE = os.path.join("..", "data", "daily_commodity_market_data.csv")
 
 # Mappings
 YAHOO_TICKERS = {
