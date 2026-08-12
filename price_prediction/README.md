@@ -20,7 +20,7 @@ This represents the logarithmic return of gold from the current trading day to t
 
 ## Team Members
 
-- Gaurav Harish
+- Gaurav Kothamachu Harish
 - Luke Sanders
 - Omar Gomaa
 

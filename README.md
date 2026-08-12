@@ -14,6 +14,6 @@ and read its README for the models, results, and how to run them.
 
 ## Team
 
-Gaurav Harish · Luke Sanders · Omar Gomaa
+Gaurav Kothamachu Harish · Luke Sanders · Omar Gomaa
 
 Academic coursework. Nothing here is financial or investment advice.

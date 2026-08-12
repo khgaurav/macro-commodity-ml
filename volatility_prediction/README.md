@@ -255,6 +255,6 @@ entirely. The backtest is stylized, with no bid-ask spread or margin mechanics.
 
 ## Team
 
-Gaurav Harish · Luke Sanders · Omar Gomaa
+Gaurav Kothamachu Harish · Luke Sanders · Omar Gomaa
 
 Academic coursework. Nothing here is financial or investment advice.
